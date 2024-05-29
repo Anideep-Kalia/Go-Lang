@@ -5,3 +5,20 @@ there is garbage value in this language everything is declared as 0
 
 instead of try and catch in js we have comma ok || err in golang that works just like that
 
+syntax of time in golang is : presenttime.format("01-02-2006 15:04:05 Monday") => this is to format the time 
+
+checkout more eniroment options my command : go env
+
+so if we want to make exe file for the other os systems we can do that by command
+: GOOS="{os_name} go build"  => os_name: {darwin: mac}, {linux and windows respectively}
+
+types of memory allocation: 
+new() : allocate memory nut no init ; you will get a memory address ; zeroed storage
+make() : allocate memory and init ; you will get memory address ; non zeroed storage
+
+automatic garbage collector: golang has 
+
+pointers: declaration of var or const is a reference to memory and these are stored in memory and sometime when passed to function the copy is passed into the function and not actual value
+so to get acutal value inside function we use memory address and not references
+the deafult value of pointer is nil
+
