@@ -1,0 +1,7 @@
+Lexer is program that checks your code to ensure you are following grammer or syntax
+it is runned before compilation
+
+there is garbage value in this language everything is declared as 0
+
+instead of try and catch in js we have comma ok || err in golang that works just like that
+
