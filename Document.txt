@@ -1,6 +1,9 @@
 Lexer is program that checks your code to ensure you are following grammer or syntax
 it is runned before compilation
 
+%T => datatype
+%v => value  && %+v => for more details
+
 there is garbage value in this language everything is declared as 0
 
 instead of try and catch in js we have comma ok || err in golang that works just like that
@@ -21,4 +24,6 @@ automatic garbage collector: golang has
 pointers: declaration of var or const is a reference to memory and these are stored in memory and sometime when passed to function the copy is passed into the function and not actual value
 so to get acutal value inside function we use memory address and not references
 the deafult value of pointer is nil
+
+there is inheritance in golang and no concept of super and parent
 
