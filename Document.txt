@@ -1,8 +1,12 @@
 Lexer is program that checks your code to ensure you are following grammer or syntax
 it is runned before compilation
 
+-> seeding: temporaaly adding data to database just for testing
+
+these are only used for printf
 %T => datatype
-%v => value  && %+v => for more details
+%v => value  && %+v => for more details && %v# -> showing complex data
+%s => to show the values inbetween the string
 
 there is garbage value in this language everything is declared as 0
 
@@ -27,3 +31,23 @@ the deafult value of pointer is nil
 
 there is inheritance in golang and no concept of super and parent
 
+we neeed to close the request everytime we made a url or http call
+
+example of saving json type data in variable :
+jsonDataFromWeb := []byte(`
+	{
+		"coursename": "ReactJS Bootcamp",
+		"Price": 299,
+		"website": "LearnCodeOnline.in",
+		"tags": ["web-dev","js"]
+	}
+	`)
+
+
+Modules: the main thing about modules in golang is all the modules are stored in cache or downloaded at the time of use from intrernet so no node_modules
+-> Go Mod commands
+> mux: like express commands: go -u gitHub.com/gorilla/mux   => will show indirect that means it is using rn so to remove this make a file using mux and run go mod tidy => use it carefully as it is expensive
+> to get all versions of modules use: "go list -m -versions {name_of_module}"
+> go mod graph => pull up graph of which module depends on which {expensive operation again}
+> to get all the modules into the local : go mod vendor => it will create folder like node_modules where you can edit the modules as u like
+to use the module from vendor use: go run -mod=vendor main.go
