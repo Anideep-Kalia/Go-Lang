@@ -1,3 +1,7 @@
+// Running commands
+// > go build .  => instal all the modules
+// > go run main.go
+
 package main
 
 import (
@@ -58,7 +62,7 @@ func main() {
 // serve home route
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("<h1>Welcome to API by LearnCodeOnline</h1>"))
+	w.Write([]byte("<h1>Welcome to our Golang Server</h1>"))
 }
 
 func getAllCourses(w http.ResponseWriter, r *http.Request) {
