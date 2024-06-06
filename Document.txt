@@ -59,4 +59,4 @@ there are different use cases of context here is one
 context.background(): when we don't want to pass any value, deadlines so it is never cancelled
 context.TODO() : This is used to connect and make a initialised connection between the database
 
-
+> getAllElements in the mongo controller is a bit tricky and purely syntaxtual so you need to look into that specifically

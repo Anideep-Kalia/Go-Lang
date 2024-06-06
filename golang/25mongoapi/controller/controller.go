@@ -101,7 +101,7 @@ func getAllMovies() []primitive.M {
 		log.Fatal(err)
 	}
 
-	var movies []primitive.M
+	var movies []primitive.M //map for bson
 
 	for cur.Next(context.Background()) {
 		var movie bson.M
