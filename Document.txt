@@ -51,3 +51,12 @@ Modules: the main thing about modules in golang is all the modules are stored in
 > go mod graph => pull up graph of which module depends on which {expensive operation again}
 > to get all the modules into the local : go mod vendor => it will create folder like node_modules where you can edit the modules as u like
 to use the module from vendor use: go run -mod=vendor main.go
+
+> to start with mongo we have preinstalled/setup in file 25monogoapi
+
+> Context in api calls: whenever our golang project is working with the remote servers we use context so that we can define the timeout and stuff like that while working with remote servers
+there are different use cases of context here is one
+context.background(): when we don't want to pass any value, deadlines so it is never cancelled
+context.TODO() : This is used to connect and make a initialised connection between the database
+
+

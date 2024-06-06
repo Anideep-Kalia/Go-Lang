@@ -15,11 +15,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const connectionString = "mongodb+srv://learncodeonline:hitesh@cluster0.humov.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+const connectionString = "mongodb+srv://anideepkalia1:anideepkalia1@cluster0.b9noxo9.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 const dbName = "netflix"
 const colName = "watchlist"
 
-//MOST IMPORTANT
+// MOST IMPORTANT
 var collection *mongo.Collection
 
 // connect with monogoDB
