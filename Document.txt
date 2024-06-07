@@ -1,12 +1,50 @@
+Commands:
+> intialising project: go mod init myproject
+> mongo init: go get go.mongodb.org/mongo-driver/mongo
+> go run main.go
+> go mod tidy
+> go build  : before running the project having db
+> go get github.com/gorilla/mux
+> go run --race : to see the race condition in multi core program
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Modules: the main thing about modules in golang is all the modules are stored in cache or downloaded at the time of use from intrernet so no node_modules
+-> Go Mod commands
+> mux: like express commands: go -u gitHub.com/gorilla/mux   => will show indirect that means it is using rn so to remove this make a file using mux and run go mod tidy => use it carefully as it is expensive
+> to get all versions of modules use: "go list -m -versions {name_of_module}"
+> go mod graph => pull up graph of which module depends on which {expensive operation again}
+> to get all the modules into the local : go mod vendor => it will create folder like node_modules where you can edit the modules as u like
+to use the module from vendor use: go run -mod=vendor main.go
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+VERY IMPORTANT THING ABOUT MODULES AND IMPORTING 
+
+-> There are 2 types of module importing in GO lang:
+. For Local Development
+. For Production development
+
+Local Development:
+-> init mod : go mod init myproject // go mod init github.com/yourusername/yourproject // go mod init example.com/mylocalproject   => IMP: the repo shown doesn't need to be an actual existing repo
+
+Production Development:
+-> init mod : go mod init github.com/yourusername/yourproject   => IMP: the repo shown need to be an actual existing repo
+-> best way to do this is to  clone the repo into local and then make changes accordingly
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Lexer is program that checks your code to ensure you are following grammer or syntax
 it is runned before compilation
 
 -> seeding: temporaaly adding data to database just for testing
 
+-> to get random number we do seeding of rand because random number gives random number based on how input have changed and with that we get random number on first it is confusing and non-sense and trust me it is : look folder 5 for example look this folder very important
+
 these are only used for printf
 %T => datatype
 %v => value  && %+v => for more details && %v# -> showing complex data
 %s => to show the values inbetween the string
+%d => to show the numbers
 
 there is garbage value in this language everything is declared as 0
 
@@ -43,15 +81,6 @@ jsonDataFromWeb := []byte(`
 	}
 	`)
 
-
-Modules: the main thing about modules in golang is all the modules are stored in cache or downloaded at the time of use from intrernet so no node_modules
--> Go Mod commands
-> mux: like express commands: go -u gitHub.com/gorilla/mux   => will show indirect that means it is using rn so to remove this make a file using mux and run go mod tidy => use it carefully as it is expensive
-> to get all versions of modules use: "go list -m -versions {name_of_module}"
-> go mod graph => pull up graph of which module depends on which {expensive operation again}
-> to get all the modules into the local : go mod vendor => it will create folder like node_modules where you can edit the modules as u like
-to use the module from vendor use: go run -mod=vendor main.go
-
 > to start with mongo we have preinstalled/setup in file 25monogoapi
 
 > Context in api calls: whenever our golang project is working with the remote servers we use context so that we can define the timeout and stuff like that while working with remote servers
@@ -60,3 +89,21 @@ context.background(): when we don't want to pass any value, deadlines so it is n
 context.TODO() : This is used to connect and make a initialised connection between the database
 
 > getAllElements in the mongo controller is a bit tricky and purely syntaxtual so you need to look into that specifically
+
+> when using monogoDb as database we have to set headers differently u can see that in monogodb controllers and we can add additional headers too like "Allow-Control-Allow-Methods" this will only specific data to apss through
+
+> to get data from params we need to use file "mux.Vars(r)"
+
+folder 26-28
+-> so we achieve concurrency by using "go" keyword but only using that is not going to do the job as the main function is not async we will get not response when we will use go keyword
+
+-> so to achieve concurrency we use WaitGroup with go so that when we get all the result then only we end the function so the waitgroup is the steroid version of time.Sleep as it auto detect when all results are obtained
+
+-> Now comes the pure OS part : mutex lock and unlock; mutex RLock an Wlock etc... so the main purpose is to avoid the problems we saw in OS by only giving access to one thread or goroutine see the files : 26 and 27
+
+-> through channels goroutine can talk to each other so that efficiency is increased by giving the signal before even a goroutine is completely executed 
+
+-> so in channel we can only extract values when using with waitgroup else it will give error and by passing the values in channel we can set order in which the goroutine will work
+
+-> execution of channel in folder 28 must watch
+

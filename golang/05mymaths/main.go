@@ -22,7 +22,7 @@ func main() {
 
 	//random from crypto
 
-	myRandomNum, _ := rand.Int(rand.Reader, big.NewInt(5))
+	myRandomNum, _ := rand.Int(rand.Reader, big.NewInt(5)) //will random numbers upto 5
 	fmt.Println(myRandomNum)
 
 }
