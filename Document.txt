@@ -1,7 +1,7 @@
 Commands:
 > intialising project: go mod init myproject
 > mongo init: go get go.mongodb.org/mongo-driver/mongo
-> go run main.go
+> go run main.go        						: running the go file
 > go mod tidy
 > go build  : before running the project having db
 > go get github.com/gorilla/mux
