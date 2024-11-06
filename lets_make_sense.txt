@@ -1,0 +1,11 @@
+> We can make 2 files inside same file but the condition is that we have to use same main function in every file
+but we get compiler error using that though both codes will run so to solve this we can change the main function in one file and call that function inside main function
+
+> Printf => only shows variable when we use %T{type of variable} or %v{any variable} etc.... but
+Println => shows variable as it is no problem of %
+
+> Any data entered in the GO is string
+
+> whenever working with modules or packages which have crypto in it we have to deal with the numbers which are very big in size (64<)
+so for that we use big.Int or big.NewInt  stuff like that
+
