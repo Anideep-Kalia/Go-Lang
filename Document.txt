@@ -7,7 +7,7 @@ Commands:
 > go get github.com/gorilla/mux
 > go run --race : to see the race condition in multi core program
 
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
 
 Modules: the main thing about modules in golang is all the modules are stored in cache or downloaded at the time of use from intrernet so no node_modules
 -> Go Mod commands
@@ -17,7 +17,7 @@ Modules: the main thing about modules in golang is all the modules are stored in
 > to get all the modules into the local : go mod vendor => it will create folder like node_modules where you can edit the modules as u like
 to use the module from vendor use: go run -mod=vendor main.go
 
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------
 
 VERY IMPORTANT THING ABOUT MODULES AND IMPORTING 
 
@@ -32,7 +32,7 @@ Production Development:
 -> init mod : go mod init github.com/yourusername/yourproject   => IMP: the repo shown need to be an actual existing repo
 -> best way to do this is to  clone the repo into local and then make changes accordingly
 
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------
 Lexer is program that checks your code to ensure you are following grammer or syntax
 it is runned before compilation
 
