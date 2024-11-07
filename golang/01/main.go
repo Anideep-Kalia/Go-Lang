@@ -23,6 +23,7 @@ func main() {
 
 	// PRINT OPTIONS
 	fmt.Println("\n", "----------Print---------")
+	fmt.Print("No next line will be made after this so adding \n")
 	fmt.Printf(username, "\n", isLoggedIn, "\n", smallVal, "\n", smallFloat, "\n", anotherVariable, " \n", website, "\n", "%T", numberOfUser, "\n")
 	fmt.Println(username, "\n", isLoggedIn, "\n", smallVal, "\n", smallFloat, "\n", anotherVariable, " \n", website, "\n", "%T", numberOfUser, "\n")
 	fmt.Printf("%v\n%v\n%v\n%v\n%v\n%v\n%T\n", username, isLoggedIn, smallVal, smallFloat, anotherVariable, website, numberOfUser)
@@ -51,4 +52,5 @@ func main() {
 	myRandomNum, error := rand.Int(rand.Reader, big.NewInt(5)) //will random numbers upto 5
 	fmt.Println(myRandomNum)
 	fmt.Println(error)
+
 }
