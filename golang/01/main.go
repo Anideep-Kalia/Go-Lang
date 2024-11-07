@@ -53,4 +53,12 @@ func main() {
 	fmt.Println(myRandomNum)
 	fmt.Println(error)
 
+	//
+	fmt.Println("\n", "---------POINTERS------------")
+	myNumber := 23
+	var ptr = &myNumber
+	println(ptr)
+	println(*ptr)
+	println(*ptr + 2)
+
 }
