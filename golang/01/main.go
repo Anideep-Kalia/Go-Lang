@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/big"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -61,4 +62,41 @@ func main() {
 	println(*ptr)
 	println(*ptr + 2)
 
+	//
+	fmt.Println("\n", "---------ARRAYS & OPERATIONS------------")
+	// INITIALISATIONS
+	// var fruitList [4]string
+	fruitList := [4]string{"aple"}
+	fruits2 := []string{"apple", "banana", "kiwi", "chiku", "aam"}
+	fruits3 := []string{}
+	fruits5 := make([]int, 5)
+
+	// FUNCTIONS
+	fruitList[0] = "Apple"
+	fruits5 = []int{1, 2, 56, 7, 8}
+	fruits3 = append(fruits3, "added some fruits")
+	fruits4 := append(fruits2[:3])                // gives first 3 elements
+	fruits5 = append(fruits5[:1], fruits5[2:]...) // spliting array
+	sort.Ints(fruits5)
+
+	// PRINTING
+	fmt.Println("Fruit list is: ", len(fruitList))
+	fmt.Println("Fruit list is: ", fruitList)
+	fmt.Println("Fruit list is:", fruits2)
+	fmt.Println("Fruit list is:", fruits3)
+	fmt.Println("Fruit list is:", fruits4)
+	fmt.Println("Fruit list is:", fruits5)
+
+	//
+	fmt.Println("\n", "---------MAPS------------")
+	maping := make(map[int]string)
+	maping[0] = "first element"
+
+	delete(maping, 2)
+
+	// Traversing
+	fmt.Println(maping[2], maping[0])
+	for it, value := range maping {
+		fmt.Printf("%v -> %v", it, value)
+	}
 }
