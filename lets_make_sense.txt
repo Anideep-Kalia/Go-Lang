@@ -1,3 +1,7 @@
+
+> null = nil & description of the datatypes in GoLang are written after naming
+> no inheritance in golang; No super or parent
+
 > We can make 2 files inside same file but the condition is that we have to use same main function in every file
 but we get compiler error using that though both codes will run so to solve this we can change the main function in one file and call that function inside main function
 
@@ -9,3 +13,25 @@ Println => shows variable as it is no problem of %
 > whenever working with modules or packages which have crypto in it we have to deal with the numbers which are very big in size (64<)
 so for that we use big.Int or big.NewInt  stuff like that
 
+> time.Now().Format("01-02-2006 15:04:05 Monday")
+
+> print and panic are part of Go’s standard library and is not preferred as they don't provide formatting like fmt.
+
+> fruits2[:3] => give first 3 elements of the array
+
+> make function in Go is used specifically to create slices, maps, and channels
+
+> println("%v",strcut) vs println(%+v,struct) => +v will provide the fields with values of struct so more details that's it 
+
+> There is also GOTO command in GO which is just transfer of compiler from one code block to other code block
+
+> When used defer the code before which defer is written will be stored in stack and will be executed in reverse order
+
+
+
+> Syntaxes:
+- var {name} int ;
+- {name} :=;
+- map => {name}:=make(map[int]int)  
+- struct => type User struct{}
+- if-else same as general

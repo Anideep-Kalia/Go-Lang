@@ -4,12 +4,28 @@ import (
 	"bufio"
 	"crypto/rand"
 	"fmt"
+	"io"
 	"math/big"
+	"net/http"
 	"os"
 	"sort"
 	"strconv"
 	"strings"
 )
+
+func adder(a int, b int) int {
+	return a + b
+}
+
+func proadder(val ...int) (int, string) {
+	res := 0
+	for i := range val {
+		res += val[i]
+	}
+	return res, "mazza hi mazza"
+}
+
+const url = "https://lco.dev"
 
 func main() {
 	// DATATYPES
@@ -99,4 +115,45 @@ func main() {
 	for it, value := range maping {
 		fmt.Printf("%v -> %v", it, value)
 	}
+
+	//
+	fmt.Println("\n", "---------IF-ELSE------------")
+	num := 5
+	if num > 3 && num < 10 {
+		fmt.Println("Num is less than 10")
+	} else {
+		fmt.Println("Num is NOT less than 10")
+	}
+
+	//
+	fmt.Println("\n", "---------FOR-LOOP------------")
+	for d := 0; d < len(fruits2); d++ {
+	}
+	for it, day := range fruits2 {
+		fmt.Println(it, "->", day, "  ")
+	}
+
+	//
+	fmt.Println("\n", "---------FUNCTIONS------------")
+	adder(num, num)
+	result, response := proadder(2, 4, 5, 6, 7)
+	println(result, response)
+
+	//
+	fmt.Println("\n", "---------FETCHING & RESPONSE------------")
+	const url = "https://lco.dev"
+	result1, err1 := http.Get(url)
+
+	if err1 == nil {
+		panic(err1)
+	}
+
+	databytes, err := io.ReadAll(result1.Body)
+	formattd := string(databytes)
+
+	fmt.Println("result: ", result1)
+	fmt.Println("result's body: ", string(databytes))
+	fmt.Println("result's body: ", formattd)
+	defer result1.Body.Close()
+
 }
