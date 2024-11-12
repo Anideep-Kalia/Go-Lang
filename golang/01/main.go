@@ -140,7 +140,7 @@ func main() {
 	println(result, response)
 
 	//
-	fmt.Println("\n", "---------FETCHING & RESPONSE------------")
+	fmt.Println("\n", "---------API WORK------------")
 	const url = "https://lco.dev"
 	result1, err1 := http.Get(url)
 

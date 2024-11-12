@@ -12,24 +12,24 @@ func main() {
 	fmt.Println(myurl)
 
 	//parsing
-	result, _ := url.Parse(myurl)
+	result, _ := url.Parse(myurl) // returns pointer
 
-	// fmt.Println(result.Scheme)
-	// fmt.Println(result.Host)
-	// fmt.Println(result.Path)
-	// fmt.Println(result.Port())
-	fmt.Println(result.RawQuery)
+	// fmt.Println(result.Scheme)	=> https
+	// fmt.Println(result.Host)		=> lco.dev:3000
+	// fmt.Println(result.Path)		=> /learn
+	// fmt.Println(result.Port())	=> 3000
+	// fmt.Println(result.RawQuery)	=> coursename=reactjs&paymentid=ghbj456ghb
 
-	qparams := result.Query()
+	qparams := result.Query() // makes map of strings i.e. making map of params of url
 	fmt.Printf("The type of query params are: %T\n", qparams)
 
-	fmt.Println(qparams["coursename"])
+	fmt.Println(qparams["coursename"]) // gives reactjs as Query() fucntion was used
 
-	for _, val := range qparams {
+	for _, val := range qparams { // iterates over every parameter of the URL
 		fmt.Println("Param is: ", val)
 	}
 
-	partsOfUrl := &url.URL{
+	partsOfUrl := &url.URL{ // as the we need pointer in case of url what we have done by parse function
 		Scheme:  "https",
 		Host:    "lco.dev",
 		Path:    "/tutcss",
