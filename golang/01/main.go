@@ -25,7 +25,7 @@ func proadder(val ...int) (int, string) {
 	return res, "mazza hi mazza"
 }
 
-const url = "https://lco.dev"
+// var responseString strings.Builder   => used for concatenating strings and string realted jobs
 
 func main() {
 	// DATATYPES
@@ -140,13 +140,13 @@ func main() {
 	println(result, response)
 
 	//
-	fmt.Println("\n", "---------API WORK------------")
-	const url = "https://lco.dev"
-	result1, err1 := http.Get(url)
+	fmt.Println("\n", "---------GET RESPONSE------------")
+	const url1 = "https://www.google.com"
+	result1, _ := http.Get(url1)
 
-	if err1 == nil {
-		panic(err1)
-	}
+	// if err1 == nil {
+	// 	panic(err1)
+	// }
 
 	databytes, err := io.ReadAll(result1.Body)
 	formattd := string(databytes)
@@ -155,5 +155,12 @@ func main() {
 	fmt.Println("result's body: ", string(databytes))
 	fmt.Println("result's body: ", formattd)
 	defer result1.Body.Close()
+
+	//
+	fmt.Println("\n", "---------CONCATANATION IN STRINGS------------")
+	var responseString strings.Builder
+	responseString.WriteString("Hello")
+	responseString.WriteString(" World")
+	println(responseString.String())
 
 }
