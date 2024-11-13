@@ -43,6 +43,17 @@ so for that we use big.Int or big.NewInt  stuff like that
 
 > There isn't any specific way to export files in GO you need to run go mod init {folder_name}  in terminal of {folder_name} and all the files in {folder_name} will be available in your local machine which can be accessed from anywhere
 
+> func() { ... }() is a way to define and immediately invoke (call) an anonymous function (a function without a name)
+
+> using a goroutine without wg.Add() the main function may exit prematurely before the goroutine has finished its execution
+
+> channels in GO allow goroutines to communicate with each other and synchronize their execution.
+. Send: ch <- value
+. value := <-ch
+- after recieving data from the channel that data will be removed from channel like stack pop in java
+- after channel is closed by some fucntion others fucntion will also not able to store data inside it
+- if some data was pushed before closing and after closing some another function retrieves data from the channel it will get those data which were stored until the Channel is empty after that 0
+
 > Modules: 
 - go mod init {folder_name} => will make the whole folder avaialable in your local machine and you can access files in folder anywhere
 - go mod init github.com/username/{folder_name} => now if we do this the whole folder again will be available in whole local machine can you can access it from anywhere but

@@ -8,8 +8,8 @@ import (
 func main() {
 	fmt.Println("Race condition - LearnCodeonline.in")
 
-	wg := &sync.WaitGroup{}
-	mut := &sync.RWMutex{}
+	wg := &sync.WaitGroup{} // WaitGroup to wait for all goroutines to complete
+	mut := &sync.RWMutex{}  // RWMutex to protect shared data (score slice)  = allows multiple readers and only one writer at a time.
 
 	var score = []int{0}
 

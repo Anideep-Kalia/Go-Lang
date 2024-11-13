@@ -6,7 +6,6 @@ import (
 )
 
 func main() {
-	fmt.Println("Channels in golang-  LearnCodeOnline.in")
 
 	myCh := make(chan int, 2) // so we are defining that there are 2 channel or 2 space in stack of channel anything more than that value would be erased and filled again
 	wg := &sync.WaitGroup{}
