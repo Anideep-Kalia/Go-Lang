@@ -8,12 +8,10 @@ import (
 
 var signals = []string{"test"}
 
-var wg sync.WaitGroup //pointer
+var wg sync.WaitGroup //pointer  => wait for collection of go routine to finish
 var mut sync.Mutex    // pointer
 
 func main() {
-	// go greeter("Hello")
-	// greeter("world")
 	websitelist := []string{
 		"https://lco.dev",
 		"https://go.dev",
@@ -24,19 +22,12 @@ func main() {
 
 	for _, web := range websitelist {
 		go getStatusCode(web)
-		wg.Add(1)
+		wg.Add(1) // signifies that a thread is added and is currently working
 	}
 
 	wg.Wait()
 	fmt.Println(signals)
 }
-
-// func greeter(s string) {
-// 	for i := 0; i < 6; i++ {
-// 		time.Sleep(3 * time.Millisecond)
-// 		fmt.Println(s)
-// 	}
-// }
 
 func getStatusCode(endpoint string) {
 	defer wg.Done()
@@ -51,6 +42,5 @@ func getStatusCode(endpoint string) {
 		mut.Unlock()
 
 		fmt.Printf("%d status code for %s\n", res.StatusCode, endpoint)
-
 	}
 }

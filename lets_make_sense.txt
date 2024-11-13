@@ -33,6 +33,14 @@ so for that we use big.Int or big.NewInt  stuff like that
 
 > to download the modules which are been imported in GO project we need to 'go mod init' -> 'go mod tidy'
 
+> Goroutines are a key feature in Go (also called Golang) for achieving concurrency. They are lightweight threads managed by the Go runtime and allow you to run functions or methods concurrently. Goroutines enable Go programs to perform non-blocking operations,
+
+> Execution of GO is simple just write  go in fornt of the function you want to be runned by the thread
+
+> var wg sync.WaitGroup  & wg.Done() => used to increase the count of the threads & to reduce the number of thread count so the code can run further
+
+> endpoint refers to URL in form of string
+
 
 
 > Syntaxes:
