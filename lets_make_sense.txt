@@ -27,6 +27,12 @@ so for that we use big.Int or big.NewInt  stuff like that
 
 > When used defer the code before which defer is written will be stored in stack and will be executed in reverse order
 
+> var myOnlineData map[string]interface{} => here interface is used so that we can map any kind of data with string key
+
+> Unmarshil always take data from API in first field and take address of second variable to store and in this variable data in form of data will be stored that't why we use var myOnlineData map[string]interface{}
+
+> to download the modules which are been imported in GO project we need to 'go mod init' -> 'go mod tidy'
+
 
 
 > Syntaxes:
