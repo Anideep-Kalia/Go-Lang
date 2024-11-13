@@ -41,6 +41,14 @@ so for that we use big.Int or big.NewInt  stuff like that
 
 > endpoint refers to URL in form of string
 
+> There isn't any specific way to export files in GO you need to run go mod init {folder_name}  in terminal of {folder_name} and all the files in {folder_name} will be available in your local machine which can be accessed from anywhere
+
+> Modules: 
+- go mod init {folder_name} => will make the whole folder avaialable in your local machine and you can access files in folder anywhere
+- go mod init github.com/username/{folder_name} => now if we do this the whole folder again will be available in whole local machine can you can access it from anywhere but
+if you push the code to actual github repo mentioned then other will also can use your package as it is on github
+- NOTICE: go mod init should be run in the terminal of {folder_name}
+
 
 
 > Syntaxes:
