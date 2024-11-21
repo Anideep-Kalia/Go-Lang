@@ -42,7 +42,6 @@ func randomUserAgent() string {
 
 func extractSitemapURLs(startURL string) []string {
 	worklist := make(chan []string) 					// contains all the (batched together) URLs that is to be crawled ; by using slice of string we have achievec batching 
-	// storing all the results
 	toCrawl := []string{}
 	var n int
 	n++
@@ -73,9 +72,25 @@ func extractSitemapURLs(startURL string) []string {
 	return toCrawl
 }
 
-func isSitemap(urls []string) ([]string, []string) {}
+func makeRequest(url string) (*http.Response, error) {
+	// A new HTTP request is tailored with client timeout, type=GET and with User-agent(browser)
+	client := http.Client{
+		Timeout: 10 * time.Second,
+	}
+	req, err := http.NewRequest("GET", url, nil)
+	req.Header.Set("User-Agent", randomUserAgent())
+	if err != nil {
+		return nil, err
+	}
+	// The new HTTP request is acutally sent 
+	res, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
 
-func makeRequest(url string) (*http.Response, error) {}
+func isSitemap(urls []string) ([]string, []string) {}
 
 func scrapeUrls(urls []string, parser Parser, concurrency int) []SeoData {}
 
