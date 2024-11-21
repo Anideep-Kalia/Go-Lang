@@ -5,7 +5,10 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"strings"
 	"time"
+
+	"github.com/PuerkitoBio/goquery"
 )
 
 var url string = ""
@@ -41,27 +44,26 @@ func randomUserAgent() string {
 }
 
 func extractSitemapURLs(startURL string) []string {
-	worklist := make(chan []string) 					// contains all the (batched together) URLs that is to be crawled ; by using slice of string we have achievec batching 
+	worklist := make(chan []string) 									// contains all the (batched together) URLs that is to be crawled ; by using slice of string we have achievec batching 
 	toCrawl := []string{}
 	var n int
 	n++
-	func() { worklist <- []string{startURL} }() 		//sending startingURL into channel
+	func() { worklist <- []string{startURL} }() 						//sending startingURL into channel
 	for ; n > 0; n-- {
-		list := <-worklist								// extracting LAST URL STORED in the channel
+		list := <-worklist												// extracting LAST URL STORED in the channel
 		for _, link := range list {
 			go func(link string) {
-				response, err := makeRequest(link)
-				if err != nil {
-					log.Printf("Error retrieving URL: %s", link)
-				}
-				urls, _ := extractUrls(response)
-				if err != nil {
-					log.Printf("Error extracting document from response, URL: %s", link)
-				}
+
+				response, err := makeRequest(link)						// all data is retrieved from the url 
+				if err != nil {  log.Printf("Request failed to URL: %s", link) }
+
+				urls, _ := extractUrls(response)						// retriving all the URL from the response
+				if err != nil { log.Printf("Error extracting URLs from res, URL: %s", link) }
+
 				sitemapFiles, pages := isSitemap(urls)
 				if sitemapFiles != nil {
 					worklist <- sitemapFiles
-					n++											// increasing number of loops as new URLs are found
+					n++													// increasing number of loops as new URLs are found
 				}
 				for _, page := range pages {
 					toCrawl = append(toCrawl, page)
@@ -90,11 +92,38 @@ func makeRequest(url string) (*http.Response, error) {
 	return res, nil
 }
 
-func isSitemap(urls []string) ([]string, []string) {}
+func extractUrls(response *http.Response) ([]string, error) {
+	doc, err := goquery.NewDocumentFromReader(response.Body)
+	if err != nil {	return nil, err	}
+	results := []string{}
+
+	// for html website we need "a" and extract heref from the text
+	sel := doc.Find("loc")				
+	for i := range sel.Nodes {
+		loc := sel.Eq(i)					//select only node i.e. in ith position
+		result := loc.Text()
+		results = append(results, result)
+	}
+
+	return results, nil
+}
+
+func isSitemap(urls []string) ([]string, []string) {
+	sitemapFiles := []string{}
+	pages := []string{}
+	for _, page := range urls {
+		foundSitemap := strings.Contains(page, "xml")
+		if foundSitemap == true {
+			fmt.Println("Found Sitemap", page)
+			sitemapFiles = append(sitemapFiles, page)
+		} else{
+			pages = append(pages, page)
+		}
+	}
+	return sitemapFiles, pages
+}
 
 func scrapeUrls(urls []string, parser Parser, concurrency int) []SeoData {}
-
-func extractUrls(response *http.Response) ([]string, error) {}
 
 func crawlPage(url string, tokens chan struct{}) (*http.Response, error) {}
 
@@ -105,7 +134,6 @@ func (d DefaultParser) GetSeoData(resp *http.Response) (SeoData, error) {}
 func ScraperSitemap(url string, parser Parser, concurrency int) []SeoData {}
 
 func main() {
-	fmt.Println("New Start")
 	p := DefaultParser{}
 
 	results := ScraperSitemap(url, p, 10)
