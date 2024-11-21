@@ -15,7 +15,7 @@ Modules: the main thing about modules in golang is all the modules are stored in
 > to get all versions of modules use: "go list -m -versions {name_of_module}"
 > go mod graph => pull up graph of which module depends on which {expensive operation again}
 > to get all the modules into the local : go mod vendor => it will create folder like node_modules where you can edit the modules as u like
-to use the module from vendor use: go run -mod=vendor main.go
+to use the module from vendor use: go run -mod=vendor main.GO 
 
 
 -------------------------------------------------------------------------------------------------
