@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 	"net/http"
 	"time"
@@ -39,9 +40,40 @@ func randomUserAgent() string {
 	return userAgents[randNum]
 }
 
-func isSitemap(urls []string) ([]string, []string) {}
+func extractSitemapURLs(startURL string) []string {
+	worklist := make(chan []string) 					// contains all the (batched together) URLs that is to be crawled ; by using slice of string we have achievec batching 
+	// storing all the results
+	toCrawl := []string{}
+	var n int
+	n++
+	func() { worklist <- []string{startURL} }() 		//sending startingURL into channel
+	for ; n > 0; n-- {
+		list := <-worklist								// extracting LAST URL STORED in the channel
+		for _, link := range list {
+			go func(link string) {
+				response, err := makeRequest(link)
+				if err != nil {
+					log.Printf("Error retrieving URL: %s", link)
+				}
+				urls, _ := extractUrls(response)
+				if err != nil {
+					log.Printf("Error extracting document from response, URL: %s", link)
+				}
+				sitemapFiles, pages := isSitemap(urls)
+				if sitemapFiles != nil {
+					worklist <- sitemapFiles
+					n++											// increasing number of loops as new URLs are found
+				}
+				for _, page := range pages {
+					toCrawl = append(toCrawl, page)
+				}
+			}(link)
+		}
+	}
+	return toCrawl
+}
 
-func extractSitemapURLs(startURL string) []string {}
+func isSitemap(urls []string) ([]string, []string) {}
 
 func makeRequest(url string) (*http.Response, error) {}
 
