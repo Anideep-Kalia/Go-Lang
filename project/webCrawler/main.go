@@ -108,6 +108,7 @@ func extractUrls(response *http.Response) ([]string, error) {
 	return results, nil
 }
 
+// Segregating pages and sitemapfiles(XML thing it is the url containing more URLs and is not a actual page)
 func isSitemap(urls []string) ([]string, []string) {
 	sitemapFiles := []string{}
 	pages := []string{}
