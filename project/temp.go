@@ -42,6 +42,7 @@ func randomUserAgent() string {
 	return userAgents[randNum]
 }
 
+// Segregating pages and sitemapfiles(XML thing it is the url containing more URLs and is not a actual page)
 func isSitemap(urls []string) ([]string, []string) {
 	sitemapFiles := []string{}
 	pages := []string{}
@@ -68,11 +69,11 @@ func extractSitemapURLs(startURL string) []string {
 		list := <-worklist								// extracting LAST URL STORED in the channel
 		for _, link := range list {
 			go func(link string) {
-				response, err := makeRequest(link)
+				response, err := makeRequest(link)  	// all data is retrieved from the url 
 				if err != nil {
 					log.Printf("Error retrieving URL: %s", link)
 				}
-				urls, _ := extractUrls(response)
+				urls, _ := extractUrls(response)		// retriving all the URL from the response
 				if err != nil {
 					log.Printf("Error extracting document from response, URL: %s", link)
 				}
@@ -112,7 +113,8 @@ func scrapeUrls(urls []string, parser Parser, concurrency int) []SeoData {
 	n++
 	worklist := make(chan []string)
 	results := []SeoData{}
-	go func() { worklist <- urls }()
+	func() { worklist <- urls }()
+
 	for ; n > 0; n-- {
 		list := <-worklist
 		for _, url := range list {

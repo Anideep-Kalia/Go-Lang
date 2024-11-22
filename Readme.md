@@ -95,6 +95,13 @@ time.Now().Format("01-02-2006 15:04:05 Monday")
   - Receiving data: `value := <-ch`
 - Channels operate like stacks; data is removed after being retrieved.
 - Closing a channel disallows further data pushes.
+- **Control Concurrency**
+  - These are also used to control number of concurrency taking place i.e. number of goroutines working at a time
+  - EXAMPLE
+    - Number of Goroutine is controlled by fixing the size of channel
+    - Each goroutine pushes in stack before starting but if the channel is full
+    - Then that goroutine has to wait befoer channel is freed; else if the channel has space
+    - Then goroutine don't have to wait and can start immediately after pushing into channel
 
 ---
 
