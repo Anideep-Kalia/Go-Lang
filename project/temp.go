@@ -113,10 +113,10 @@ func scrapeUrls(urls []string, parser Parser, concurrency int) []SeoData {
 	n++
 	worklist := make(chan []string)
 	results := []SeoData{}
-	func() { worklist <- urls }()
+	func() { worklist <- urls }()		// filing worklist with urls which need to be processed
 
 	for ; n > 0; n-- {
-		list := <-worklist
+		var list []string = <-worklist
 		for _, url := range list {
 			if url != "" {
 				n++

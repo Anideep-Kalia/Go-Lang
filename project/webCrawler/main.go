@@ -124,7 +124,48 @@ func isSitemap(urls []string) ([]string, []string) {
 	return sitemapFiles, pages
 }
 
-func scrapeUrls(urls []string, parser Parser, concurrency int) []SeoData {}
+// Parser is used for extracting SEO data from the HTML responses
+func scrapeUrls(urls []string, parser Parser, concurrency int) []SeoData {
+    tokens := make(chan struct{}, concurrency)
+    worklist := make(chan []string)
+    var activeTasks int
+    results := []SeoData{}
+
+    // Add the initial list of URLs to the worklist.
+    activeTasks++
+    go func() { worklist <- urls }()
+
+    for activeTasks > 0 {
+        batch := <-worklist
+        activeTasks--
+
+        // Loop through each URL in the batch.
+        for _, url := range batch {
+            if url != "" {
+                activeTasks++ // Increment activeTasks for each new goroutine.
+
+                // Process the URL concurrently.
+                go func(url string) {
+                    log.Printf("Requesting URL: %s", url)
+
+                    // Scrape the URL while respecting the concurrency limit.
+                    res, err := scrapePage(url, tokens, parser)
+                    if err != nil {
+                        log.Printf("Error scraping URL: %s", url)
+                    } else {
+                        results = append(results, res)
+                    }
+
+                    // Indicate that the task is complete by sending an empty batch to worklist.
+                    worklist <- []string{}
+                }(url)
+            }
+        }
+    }
+
+    return results
+}
+
 
 func crawlPage(url string, tokens chan struct{}) (*http.Response, error) {}
 
