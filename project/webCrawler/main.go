@@ -21,11 +21,28 @@ type SeoData struct {
 	StatusCode      int
 }
 
+// There was no need to make this as we can directly implement GetSeoData but now we have written so it will show us how interface works in GoLang
 type Parser interface {
 	GetSeoData(resp *http.Response) (SeoData, error)
 }
 
+// No implementation here as we need to use DefaultParser only 
 type DefaultParser struct {
+}
+
+// GetSeoData concrete implementation of the default parser & here (d DefaultParser is written because we need to attach this function with Parser Interface)
+func (d DefaultParser) GetSeoData(resp *http.Response) (SeoData, error) {
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
+	if err != nil {
+		return SeoData{}, err
+	}
+	result := SeoData{}
+	result.URL = resp.Request.URL.String()
+	result.StatusCode = resp.StatusCode
+	result.Title = doc.Find("title").First().Text()
+	result.H1 = doc.Find("h1").First().Text()
+	result.MetaDescription, _ = doc.Find("meta[name^=description]").Attr("content")
+	return result, nil
 }
 
 var userAgents = []string{
@@ -125,6 +142,7 @@ func isSitemap(urls []string) ([]string, []string) {
 }
 
 // Parser is used for extracting SEO data from the HTML responses
+// It is done just as written so no need to think and waste time again
 func scrapeUrls(urls []string, parser Parser, concurrency int) []SeoData {
     tokens := make(chan struct{}, concurrency)
     worklist := make(chan []string)
@@ -167,11 +185,31 @@ func scrapeUrls(urls []string, parser Parser, concurrency int) []SeoData {
 }
 
 
-func crawlPage(url string, tokens chan struct{}) (*http.Response, error) {}
+func scrapePage(url string, token chan struct{}, parser Parser) (SeoData, error) {
 
-func scrapePage(url string, token chan struct{}, parser Parser) (SeoData, error) {}
+	res, err := func (url string, tokens chan struct{})(*http.Response, error){
+		tokens <- struct{}{}
+		resp, err := makeRequest(url)
+		<-tokens
+		if err != nil {
+			return nil, err
+		}
+		return resp, err
+	}(url, token)
 
-func (d DefaultParser) GetSeoData(resp *http.Response) (SeoData, error) {}
+	if err != nil {
+		return SeoData{}, err
+	}
+
+	data, err := parser.GetSeoData(res)
+
+	if err != nil {
+		return SeoData{}, err
+	}
+
+	return data, nil
+}
+
 
 func ScrapeSitemap(url string, parser Parser, concurrency int) []SeoData {
 	// Extract URLs from given website so that they can be crawled

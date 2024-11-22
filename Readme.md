@@ -144,5 +144,17 @@ type User struct{}
   func() { ... }()
   ```
 - Ensure **synchronization** when using Goroutines by using WaitGroups, or else the `main` function may exit prematurely.
+- Miscellaneous
+  ```go
+  type DefaultParser struct {
+    customField string
+  }
+  func (d DefaultParser) GetCustomField() string {   // copy of the instance and not actual instance will be changed
+    return d.customField
+  }
+  func (*d DefaultParser) GetCustomField() string {   // actual instance will be modified in this function
+    return d.customField
+  }
+  ```
 
 ---
