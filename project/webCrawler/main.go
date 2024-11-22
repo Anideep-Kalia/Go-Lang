@@ -132,7 +132,14 @@ func scrapePage(url string, token chan struct{}, parser Parser) (SeoData, error)
 
 func (d DefaultParser) GetSeoData(resp *http.Response) (SeoData, error) {}
 
-func ScraperSitemap(url string, parser Parser, concurrency int) []SeoData {}
+func ScrapeSitemap(url string, parser Parser, concurrency int) []SeoData {
+	// Extract URLs from given website so that they can be crawled
+	var results []string = extractSitemapURLs(url)
+
+	// Now crawling all the URLs obtained
+	var res []SeoData = scrapeUrls(results, parser, concurrency)
+	return res
+}
 
 func main() {
 	p := DefaultParser{}

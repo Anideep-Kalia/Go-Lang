@@ -190,10 +190,10 @@ func (d DefaultParser) GetSeoData(resp *http.Response) (SeoData, error) {
 
 func ScrapeSitemap(url string, parser Parser, concurrency int) []SeoData {
 	// Extract URLs from given website so that they can be crawled
-	results := extractSitemapURLs(url)
+	var results []string = extractSitemapURLs(url)
 
 	// Now crawling all the URLs obtained
-	res := scrapeUrls(results, parser, concurrency)
+	var res []SeoData = scrapeUrls(results, parser, concurrency)
 	return res
 }
 
