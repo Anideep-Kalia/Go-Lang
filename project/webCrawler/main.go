@@ -11,7 +11,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-var url string = ""
+var url string = "https://www.quicksprout.com/sitemap.xml"
 
 type SeoData struct {
 	URL             string
@@ -61,35 +61,52 @@ func randomUserAgent() string {
 }
 
 func extractSitemapURLs(startURL string) []string {
-	worklist := make(chan []string) 									// contains all the (batched together) URLs that is to be crawled ; by using slice of string we have achievec batching 
+	worklist := make(chan []string) // Channel for batched URLs
 	toCrawl := []string{}
 	var n int
+
+	// Send the starting URL into the channel
 	n++
-	func() { worklist <- []string{startURL} }() 						//sending startingURL into channel
-	for ; n > 0; n-- {
-		list := <-worklist												// extracting LAST URL STORED in the channel
+	go func() { worklist <- []string{startURL} }()
+
+	for n > 0 {
+		// Wait for a batch of URLs
+		list := <-worklist
+		n--
+
+		// Process each URL in the batch
 		for _, link := range list {
-			go func(link string) {
+			if link != "" {
+				n++ // Increment for the new goroutine
+				go func(link string) {
+					defer func() { n-- }() // Decrement once the goroutine finishes
+					
+					response, err := makeRequest(link)
+					if err != nil {
+						log.Printf("Request failed: %s", link)
+						return
+					}
 
-				response, err := makeRequest(link)						// all data is retrieved from the url 
-				if err != nil {  log.Printf("Request failed to URL: %s", link) }
+					urls, err := extractUrls(response)
+					if err != nil {
+						log.Printf("Error extracting URLs: %s", link)
+						return
+					}
 
-				urls, _ := extractUrls(response)						// retriving all the URL from the response
-				if err != nil { log.Printf("Error extracting URLs from res, URL: %s", link) }
+					sitemapFiles, pages := isSitemap(urls)
+					if len(sitemapFiles) > 0 {
+						worklist <- sitemapFiles // Add sitemap files for further crawling
+					}
 
-				sitemapFiles, pages := isSitemap(urls)
-				if sitemapFiles != nil {
-					worklist <- sitemapFiles
-					n++													// increasing number of loops as new URLs are found
-				}
-				for _, page := range pages {
-					toCrawl = append(toCrawl, page)
-				}
-			}(link)
+					toCrawl = append(toCrawl, pages...)
+				}(link)
+			}
 		}
 	}
+
 	return toCrawl
 }
+
 
 func makeRequest(url string) (*http.Response, error) {
 	// A new HTTP request is tailored with client timeout, type=GET and with User-agent(browser)
@@ -223,8 +240,8 @@ func ScrapeSitemap(url string, parser Parser, concurrency int) []SeoData {
 func main() {
 	p := DefaultParser{}
 
-	results := ScraperSitemap(url, p, 10)
+	results := ScrapeSitemap(url, p, 10)
 	for _, res := range results {
-
+		fmt.Println(res)
 	}
 }

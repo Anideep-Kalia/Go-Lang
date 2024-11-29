@@ -6,7 +6,10 @@ import (
 	"math/rand"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
+
+	"github.com/PuerkitoBio/goquery" // Import goquery for parsing HTML
 )
 
 // SeoData is a struct of useful SEO data
@@ -23,7 +26,7 @@ type Parser interface {
 	GetSeoData(resp *http.Response) (SeoData, error)
 }
 
-// DefaultParser is en empty struct for implmenting default parser
+// DefaultParser is an empty struct for implementing the default parser
 type DefaultParser struct {
 }
 
@@ -38,18 +41,16 @@ var userAgents = []string{
 
 func randomUserAgent() string {
 	rand.Seed(time.Now().Unix())
-	randNum := rand.Int() % len(userAgents)
-	return userAgents[randNum]
+	return userAgents[rand.Intn(len(userAgents))]
 }
 
-// Segregating pages and sitemapfiles(XML thing it is the url containing more URLs and is not a actual page)
+// Segregating pages and sitemap files (URLs containing more URLs and not actual pages)
 func isSitemap(urls []string) ([]string, []string) {
 	sitemapFiles := []string{}
 	pages := []string{}
 	for _, page := range urls {
-		foundSitemap := strings.Contains(page, "xml")
-		if foundSitemap == true {
-			fmt.Println("Found Sitemap", page)
+		if strings.Contains(page, "xml") {
+			fmt.Println("Found Sitemap:", page)
 			sitemapFiles = append(sitemapFiles, page)
 		} else {
 			pages = append(pages, page)
@@ -59,32 +60,42 @@ func isSitemap(urls []string) ([]string, []string) {
 }
 
 func extractSitemapURLs(startURL string) []string {
-	worklist := make(chan []string) 					// contains all the (batched together) URLs that is to be crawled ; by using slice of string we have achievec batching 
-	// storing all the results
-	toCrawl := []string{}
-	var n int
-	n++
-	func() { worklist <- []string{startURL} }() 		//sending startingURL into channel
-	for ; n > 0; n-- {
-		list := <-worklist								// extracting LAST URL STORED in the channel
+	var toCrawl []string
+	worklist := make(chan []string) // Channel to manage URLs
+	var wg sync.WaitGroup           // WaitGroup to synchronize goroutines
+
+	// Start processing with the initial URL
+	wg.Add(1)
+	go func() { worklist <- []string{startURL} }()
+
+	go func() {
+		wg.Wait()
+		close(worklist)
+	}()
+
+	// Process URLs from the channel
+	for list := range worklist {
 		for _, link := range list {
+			wg.Add(1)
 			go func(link string) {
-				response, err := makeRequest(link)  	// all data is retrieved from the url 
+				defer wg.Done()
+				response, err := makeRequest(link)
 				if err != nil {
 					log.Printf("Error retrieving URL: %s", link)
+					return
 				}
-				urls, _ := extractUrls(response)		// retriving all the URL from the response
+
+				urls, err := extractUrls(response)
 				if err != nil {
 					log.Printf("Error extracting document from response, URL: %s", link)
+					return
 				}
+
 				sitemapFiles, pages := isSitemap(urls)
 				if sitemapFiles != nil {
-					worklist <- sitemapFiles
-					n++											// increasing number of loops as new URLs are found
+					go func() { worklist <- sitemapFiles }()
 				}
-				for _, page := range pages {
-					toCrawl = append(toCrawl, page)
-				}
+				toCrawl = append(toCrawl, pages...)
 			}(link)
 		}
 	}
@@ -92,109 +103,75 @@ func extractSitemapURLs(startURL string) []string {
 }
 
 func makeRequest(url string) (*http.Response, error) {
-	client := http.Client{
-		Timeout: 10 * time.Second,
-	}
+	client := http.Client{Timeout: 10 * time.Second}
 	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
 	req.Header.Set("User-Agent", randomUserAgent())
-	if err != nil {
-		return nil, err
-	}
-	res, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	return res, nil
-}
-
-func scrapeUrls(urls []string, parser Parser, concurrency int) []SeoData {
-	tokens := make(chan struct{}, concurrency)
-	var n int
-	n++
-	worklist := make(chan []string)
-	results := []SeoData{}
-	func() { worklist <- urls }()		// filing worklist with urls which need to be processed
-
-	for ; n > 0; n-- {
-		var list []string = <-worklist
-		for _, url := range list {
-			if url != "" {
-				n++
-				go func(url string, token chan struct{}) {
-					log.Printf("Requesting URL: %s", url)
-					res, err := scrapePage(url, tokens, parser)
-					if err != nil {
-						log.Printf("Encountered error, URL: %s", url)
-					} else {
-						results = append(results, res)
-					}
-					worklist <- []string{}
-				}(url, tokens)
-			}
-		}
-	}
-	return results
+	return client.Do(req)
 }
 
 func extractUrls(response *http.Response) ([]string, error) {
-	doc, err := goquery.NewDocumentFromResponse(response)
+	defer response.Body.Close()
+	doc, err := goquery.NewDocumentFromReader(response.Body)
 	if err != nil {
 		return nil, err
 	}
 	results := []string{}
-	sel := doc.Find("loc")
-	for i := range sel.Nodes {
-		loc := sel.Eq(i)
-		result := loc.Text()
-		results = append(results, result)
-	}
+	doc.Find("loc").Each(func(i int, s *goquery.Selection) {
+		results = append(results, s.Text())
+	})
 	return results, nil
 }
 
-func scrapePage(url string, token chan struct{}, parser Parser) (SeoData, error) {
-	res, err := crawlPage(url, token)
-	if err != nil {
-		return SeoData{}, err
-	}
-	data, err := parser.GetSeoData(res)
-	if err != nil {
-		return SeoData{}, err
-	}
-	return data, nil
-}
+func scrapePage(url string, tokens chan struct{}, parser Parser) (SeoData, error) {
+	tokens <- struct{}{}        // Acquire token
+	defer func() { <-tokens }() // Release token
 
-func crawlPage(url string, tokens chan struct{}) (*http.Response, error) {
-	tokens <- struct{}{}
 	resp, err := makeRequest(url)
-	<-tokens
-	if err != nil {
-		return nil, err
-	}
-	return resp, err
-}
-
-// GetSeoData concrete implementation of the default parser
-func (d DefaultParser) GetSeoData(resp *http.Response) (SeoData, error) {
-	doc, err := goquery.NewDocumentFromResponse(resp)
 	if err != nil {
 		return SeoData{}, err
 	}
-	result := SeoData{}
-	result.URL = resp.Request.URL.String()
-	result.StatusCode = resp.StatusCode
-	result.Title = doc.Find("title").First().Text()
-	result.H1 = doc.Find("h1").First().Text()
-	result.MetaDescription, _ = doc.Find("meta[name^=description]").Attr("content")
-	return result, nil
+	return parser.GetSeoData(resp)
+}
+
+func (d DefaultParser) GetSeoData(resp *http.Response) (SeoData, error) {
+	defer resp.Body.Close()
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
+	if err != nil {
+		return SeoData{}, err
+	}
+	return SeoData{
+		URL:             resp.Request.URL.String(),
+		Title:           doc.Find("title").Text(),
+		H1:              doc.Find("h1").Text(),
+		MetaDescription: doc.Find("meta[name=description]").AttrOr("content", ""),
+		StatusCode:      resp.StatusCode,
+	}, nil
 }
 
 func ScrapeSitemap(url string, parser Parser, concurrency int) []SeoData {
-	// Extract URLs from given website so that they can be crawled
-	var results []string = extractSitemapURLs(url)
+	results := extractSitemapURLs(url)
 
-	// Now crawling all the URLs obtained
-	var res []SeoData = scrapeUrls(results, parser, concurrency)
-	return res
+	tokens := make(chan struct{}, concurrency) // Limit concurrency
+	var wg sync.WaitGroup
+	data := make([]SeoData, 0)
+
+	for _, url := range results {
+		wg.Add(1)
+		go func(url string) {
+			defer wg.Done()
+			result, err := scrapePage(url, tokens, parser)
+			if err != nil {
+				log.Printf("Error scraping URL %s: %v", url, err)
+				return
+			}
+			data = append(data, result)
+		}(url)
+	}
+	wg.Wait()
+	return data
 }
 
 func main() {
