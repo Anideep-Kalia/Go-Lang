@@ -26,7 +26,7 @@ func setupCallbacks(c *colly.Collector, stocks *[]Stock) {
 	c.OnError(func(r* colly.Response,err error){
 		log.Println("Error occurred:", err)
 	})
-	c.OnHTML("div#quote-header-info", func(e *colly.HTMLElement) {
+	c.OnHTML("div.container", func(e *colly.HTMLElement) {
 		stock := Stock{
 			company: e.ChildText("h1"),
 			price:   e.ChildText("fin-streamer[data-field='regularMarketPrice']"),
@@ -37,25 +37,6 @@ func setupCallbacks(c *colly.Collector, stocks *[]Stock) {
 		*stocks = append(*stocks, stock)
 	})
 }
-
-func main() {
-	stocks := []Stock{}
-	c := colly.NewCollector()
-
-	// Set up callbacks
-	setupCallbacks(c, &stocks)
-
-	// Visit each ticker URL
-	for _, t := range ticker {
-		c.Visit("https://finance.yahoo.com/quote/" + t + "/")
-	}
-
-	c.Wait() // Ensure all scraping tasks are completed
-
-	// Save the results to a CSV file
-	saveToCSV(stocks)
-}
-
 
 // Function to save the scraped data to a CSV file
 func saveToCSV(stocks []Stock) {
@@ -78,3 +59,24 @@ func saveToCSV(stocks []Stock) {
 
 	fmt.Println("Data saved to stocks.csv")
 }
+
+func main() {
+	stocks := []Stock{}
+	c := colly.NewCollector()
+
+	// Set up callbacks
+	setupCallbacks(c, &stocks)
+
+	// Visit each ticker URL
+	for _, t := range ticker {
+		c.Visit("https://finance.yahoo.com/quote/" + t + "/")
+	}
+
+	c.Wait() // Ensure all scraping tasks are completed
+
+	// Save the results to a CSV file
+	saveToCSV(stocks)
+}
+
+
+
