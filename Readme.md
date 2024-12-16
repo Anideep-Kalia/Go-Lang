@@ -136,6 +136,64 @@ type User struct{}
 ```
 
 ---
+### Packages 
+
+All files in the same folder belong to the same package. You do not need to import files within the same package explicitly.
+Example:
+
+```go
+project/
+├── main.go
+├── helpers/
+│   ├── math.go
+│   ├── string.go
+```
+
+- helpers/math.go:
+  ```go
+  package helpers
+
+  func Add(a, b int) int {
+      return a + b
+  }
+  ```
+
+- helpers/string.go:
+  ```go
+  package helpers
+
+  func ToUpperCase(s string) string {
+      return strings.ToUpper(s)
+  }
+  ```
+- main.go:
+  ```go
+  package main
+
+  import (
+      "project/helpers"
+      "fmt"
+  )
+
+  func main() {
+      fmt.Println(helpers.Add(3, 5))          // Output: 8
+      fmt.Println(helpers.ToUpperCase("go")) // Output: GO
+  }
+  ```
+
+here project is initialised directory during 
+```go
+  go mod init project
+```
+but if you used github URL then you would import these folder as
+```go
+  import (
+    "github.com/username/{folder_name}/helpers"
+  )
+```
+above in main folder
+
+---
 
 ## Additional Notes 📝
 
