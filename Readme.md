@@ -216,3 +216,10 @@ above in main folder
   ```
 
 ---
+
+## Receiver
+
+(r *mutationResolver) -> receiver to show that CreateAccount is a method of mutationResolver just like in OOP 
+```go
+  func (r *mutationResolver) CreateAccount(ctx context.Context, in AccountInput) (*Account, error) {
+```
