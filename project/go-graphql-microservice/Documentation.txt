@@ -1,0 +1,238 @@
+MODULES:
+gqlgen for GraphQL => run go run github.com/99designs/gqlgen generate
+Install protoc -> go install google.golang.org/protobuf/cmd/protoc-gen-go@latest -> run: "go install google.golang.org/protobuf/cmd/protoc-gen-go@latest" -> " go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest " -> mkdir pb -> "protoc ./account.proto --go_out=./pb --go-grpc_out=./pb" -> change import _ to pb in both  => for proto in grpc
+-------------------------------------------------------------------------------------------------------
+GRPC:
+gRPC is a modern open-source remote procedure call (RPC) framework developed by Google. Used in distributed systems / microservices arch. where applications communicate with each other. gRPC leverages *HTTP/2 for transport, *Protocol Buffers (Protobuf) for serialization, and supports multiple programming languages.
+It works like a triggering setup you need to define proto(schema) and write implementation on sever side what it will do to repository and just run client version of that method on client side to actual implement the function on server side 
+
+Key Use Cases of gRPC:
+Microservices Communication:
+Low-Latency Applications:
+Bidirectional Streaming: chat application, video streaming etc.
+Interoperability in Heterogeneous Environments: communication between services written in different programming languages 
+
+Features:
+Uses HTTP/2 for faster transport with multiplexing, compressed headers, and binary serialization.
+Language-agnostic: Official support for many languages (e.g., C++, Java, Python, Go, Node.js, etc.).
+Strongly Typed APIs: Protobuf defines APIs with strongly typed messages, reducing errors and improving code maintainability.
+Streaming Support: upports unary RPC (single request-response), server streaming, client streaming, and bidirectional streaming.
+Authentication:Supports SSL/TLS for encryption and token-based authentication mechanisms.
+Backward Compatibility:Protobuf ensures backward and forward compatibility, allowing services to evolve independently.
+
+-------------------------------------------------------------------------------------------------------
+HTTP/2
+designed to address the limitations of HTTP/1.1
+
+Key Features of HTTP/2 in gRPC:
+Multiplexing:
+Header Compression:
+Binary Framing: making it faster and less error-prone
+Stream Prioritization:
+Persistent Connections:
+Bidirectional Communication: full-duplex communication
+
+-------------------------------------------------------------------------------------------------------
+PROTOCOL BUFFERS
+Protocol Buffers (Protobuf) for Serialization
+lightweight, efficient serialization format developed by Google. It is used in gRPC for defining and encoding messages exchanged between services.
+
+What is Serialization?
+Serialization is the process of converting structured data into a format that can be transmitted over the network or stored, and later reconstructed (deserialized).
+
+Key Features of Protobuf in gRPC:
+Compact and Efficient: encodes data in a compact binary format; Reduce payload size compared to JSON or XML
+Cross-Language Compatibility:
+Strongly Typed: ensures that messages have a predefined structure, reducing errors
+Backward and Forward Compatibility:
+Fast Parsing and Serialization: faster than JSON or XML in both serialization and deserialization due to its binary nature.
+
+-------------------------------------------------------------------------------------------------------
+GRAPHQL
+
+Inputs are just like types only the difference is inputs are defined to define what kind of inputs user will send
+but types used to define kind of data type will be sent to user
+
+Pagination Input is the actual place where we get the functionality of user want only that memory is fetched form db; large data sets into manageable chunks
+
+gqlgen is a popular library which automates boilerplate associated with GraphQL
+. developer has to just make .GraphQL in which there will be schema 
+. make gqlgen.yaml specifying 
+. run go run github.com/99designs/gqlgen generate
+. resolvers interface will be maded inside resolver.go;70
+-------------------------------------------------------------------------------------------------------
+ACCOUNT:
+
+ Mutation or Query -> Client <-> Server -> Service -> repository
+
+- Repository Layer: This layer interacts directly with the database.
+. Executes SQL queries.
+. Maps database results to Go structures.
+. Ensures proper connection management.
+
+- SERVICE: only triggers corresnponding function of the repositroy and it is only made for business logic
+- SEVER: opens up the GRPC connecttion and handles logic and transmission between Server and Client which is in GRPC
+
+- Server Layer (server.go): This layer handles interactions with external clients. In your code, the server layer might be used to:
+. Receive data from a client (e.g., a GRPC request).
+. Call the service layer methods to execute business logic.
+. Return the response back to the client.
+. Decouple the external interface from the internal logic.
+
+- Service Layer: The service is where the business logic resides. It:
+. Implements business rules and conditions.
+. Combines data from multiple repositories if necessary.
+. Ensures consistency and correctness of the data.
+. Calls the repository for persistence.
+. Abstract the business logic.
+. Provide a reusable and cohesive internal API.
+
+PROTO AND GRPC:
+- Protocol Buffers (Proto) are like a schema or contract that defines how the messages should be structured when they are sent and received over gRPC
+- To implement gRPC we need to establish proto and to do that we need to create by which proto can understand what to implement when key is called and that's how it is lighter than xml OR JSON
+- Role of Proto (Protocol Buffers) used to define: Services: What functions the server offers; Messages: The structure of the data being passed between the client and server.
+. So service are like methods and the messages are the types of the inputs and outputs of these methods
+
+CLIENT:
+- On client side grpc works differently as in this we aren't registering the business logic with grpc n/w (Analogous to express.js est. API)
+. in this we connecting to grpc connection already established
+- in this we make new instance so AccountServices by NewAccountServiceClient
+
+-------------------------------------------------------------------------------------------------------
+CATALOG:
+
+- ELASTIC: is used for Full-text Search, Data Analytics, Log and Meteric Management
+. we have used it as DB for the catalog microservice and it is no-SQL 
+. It is preferred over Mongodb for it's high speed and search ability
+. Sniffing is the dynamic discovery of nodes i.e. horizontal scaling
+. Index -> category; type -> subcategory; id -> identifier
+
+- REPOSITORY: Contains all the elastic search functions and not Postgres like in repository of ACCOUNT
+- SERVICE: have functions which just call corresponding Repository function so just like a cover for business logic
+-------------------------------------------------------------------------------------------------------
+ORDER:
+
+- Postgres used as db
+- These are specific to account 
+- A order can contain multiple Products with different ProductID
+
+-------------------------------------------------------------------------------------------------------
+go run . => on docker-compose.yaml to run all the docker files and run the project
+-------------------------------------------------------------------------------------------------------
+SQL/POSTGRES
+- BeginTx: is used when we have to implement more than one db commands and if all commands are done then only change the db otherwise rollback
+- QueryRowContext:  row := r.db.QueryRowContext(ctx, "SELECT id, name FROM accounts WHERE id = $1", id)	
+- ExecContext: 	    _, err := r.db.ExecContext(ctx, "INSERT INTO accounts(id, name) VALUES($1, $2)", a.ID, a.Name)
+- QueryContext:	    rows, err := r.db.QueryContext( ctx,"SELECT id, name FROM accounts ORDER BY id DESC OFFSET $1 LIMIT $2", skip, take, )
+- PrepareContext:   used to prepare SQL commands struct which can be used again and again
+- CopyIN: 	    used to insert multiple rows in a single query so we don't have to run insert query multiple times
+- For multiple insertion into db above 2 are used as wee can see in repository of ORDER
+-------------------------------------------------------------------------------------------------------
+QUERIES AND MUTATION:
+> query{
+	accounts{
+		id
+		name
+	}
+   }
+
+> mutation{
+	createAccount(account:{name: "New Account"}){
+		id
+		name
+	}
+  }
+
+> mutation{
+	createProduct(product:{name:"New Product", description:"A new product", "price":199}){
+		id
+		name
+		price
+	}
+  }
+
+> query{
+	products{
+	id
+	name
+	price
+	}
+  }
+
+> query{
+	accounts{
+	id
+	name
+	}
+  }
+
+> mutation{
+	createOrder(order:{accountId:"??", products:[{id:"?",quantity:?}]}){
+		id
+		totalPrice
+		products{
+		name
+		quantity
+		}
+	}
+  }
+
+> query{
+	accounts(id: "?"){
+		name
+		orders{
+			id
+			createdAt
+			totalPrice
+			products{
+				name
+				quantity
+				price
+			}
+		}
+	}
+  }
+
+> query{
+	products(pagination:{skip:0, take:5},query:"?"){
+		id
+		name
+		description
+		price
+	}
+  }
+
+> query{
+	accounts(id:"?"){
+		name
+		orders{
+			totalPrice
+		}
+	}
+}
+
+
+-------------------------------------------------------------------------------------------------------
+SYNTAX:
+
+retry.ForeverSleep: 
+maxRetries := 4
+retry.ForeverSleep(2*time.Second, func(attempt int) (err error) {
+    if attempt >= maxRetries {
+        fmt.Println("Max retries reached. Stopping.")
+        return nil // Stop retrying by returning nil
+    }
+
+    r, err = catalog.NewElasticRepository(cfg.DatabaseURL)
+    if err != nil {
+        log.Printf("Attempt %d failed: %v", attempt+1, err) // attempt is 0-indexed
+        return err // Continue retrying
+    }
+
+    fmt.Println("Successfully connected!")
+    return nil // Stop retrying on success
+})
+
+
+
+
