@@ -99,7 +99,33 @@ time.Now().Format("01-02-2006 15:04:05 Monday")
 ## 🧩 Working with Arrays and Slices
 
 - `fruits2[:3]` retrieves the **first 3 elements** of an array.
-- Use `make` for creating slices, maps, and channels in Go.
+- Use `make` for creating slices, maps, and channels in Go.  
+- Arrays:
+  ```
+      c := [...]string{"go", "is", "fun"}
+      var grid [2][3]int
+  ```
+- maps:
+  ```
+      m := make(map[string]int)
+      // with capacity
+      m := make(map[string]int, 10)
+  ```
+- slices(vectors i.e. dynaimc size):
+  ```
+      s2 := make([]int, 0, 5)      // len=0 cap=5
+      // Full slice expressions (control capacity)
+      s5 := arr[1:3:3]             // low:high:max -> len=2 cap=2
+  ```
+- channels:
+  ```
+      // Unbuffered channel (sends/receives block until the other side is ready)
+      ch := make(chan int)
+
+      // Buffered channel (capacity N; send blocks only when buffer full)
+      ch2 := make(chan string, 3)
+  ```
+  
 
 ---
 
@@ -272,6 +298,7 @@ above in main folder
 ```go
   func (r *mutationResolver) CreateAccount(ctx context.Context, in AccountInput) (*Account, error) {
 ```
+
 
 
 
