@@ -7,6 +7,27 @@
 - `null` is referred to as `nil` in Go.
 - Data type descriptions in Go come **after** the variable name, unlike some other languages.
 
+### Interface
+used when we don't know which datatype will function get, in below code we have  
+
+```
+func divide(a, b interface{}) (float64, error) {
+    af, okA := a.(float64)
+    bf, okB := b.(float64)
+    if !okA || !okB {
+        return 0, errors.New("invalid types, expected float64")
+    }
+    if bf == 0 {
+        return 0, errors.New("division by zero")
+    }
+    return af / bf, nil
+}
+```
+af, okA:=a.(float64) => here we are changing the a datatype of a, if the operation is successful then okA will be true else false and af is the actual value which will be used in future   
+
+If you wnat to use 'a' only in code then we have 2 options:  
+1> overwrite the a with af   
+2> write direct: ` a = a.(float64)` but the catch is if the operation fails then whole code would panic and goes down  
 ### No Inheritance
 - Go does **not** support inheritance, nor does it have `super` or `parent` keywords.
 - Way around:
@@ -251,5 +272,6 @@ above in main folder
 ```go
   func (r *mutationResolver) CreateAccount(ctx context.Context, in AccountInput) (*Account, error) {
 ```
+
 
 
