@@ -10,34 +10,34 @@
 ### No Inheritance
 - Go does **not** support inheritance, nor does it have `super` or `parent` keywords.
 - Way around:
-```
-type Animal struct {
-    Name string
-}
+  ```
+        type Animal struct {
+            Name string
+        }
+        
+        func (a Animal) Speak() {
+            fmt.Println("Animal speaking...")
+        }
+        
+        type Dog struct {
+            Animal // embeds Animal; its methods/fields are *promoted*
+        }
+        
+        func (d Dog) Speak() { // overrides the promoted Speak
+            fmt.Println("Dog barking...")
+        }
+        
+        func main() {
+            d := Dog{Animal: Animal{Name: "Bruno"}}
+        
+            d.Speak()         // Dog barking...  (Dog’s method wins)
+            d.Animal.Speak()  // Animal speaking... (“super” style call)
+        
+            // Promoted field access:
+            fmt.Println(d.Name) // "Bruno" (from embedded Animal)
+        }
 
-func (a Animal) Speak() {
-    fmt.Println("Animal speaking...")
-}
-
-type Dog struct {
-    Animal // embeds Animal; its methods/fields are *promoted*
-}
-
-func (d Dog) Speak() { // overrides the promoted Speak
-    fmt.Println("Dog barking...")
-}
-
-func main() {
-    d := Dog{Animal: Animal{Name: "Bruno"}}
-
-    d.Speak()         // Dog barking...  (Dog’s method wins)
-    d.Animal.Speak()  // Animal speaking... (“super” style call)
-
-    // Promoted field access:
-    fmt.Println(d.Name) // "Bruno" (from embedded Animal)
-}
-
-```
+  ```
 ---
 
 ## 📄 File Handling in Go
@@ -251,4 +251,5 @@ above in main folder
 ```go
   func (r *mutationResolver) CreateAccount(ctx context.Context, in AccountInput) (*Account, error) {
 ```
+
 
