@@ -110,6 +110,10 @@ time.Now().Format("01-02-2006 15:04:05 Monday")
       m := make(map[string]int)
       // with capacity
       m := make(map[string]int, 10)
+      data := map[string]interface{}{
+        "name": "Anideep",
+        "age":  25,
+      }
   ```
 - slices(vectors i.e. dynaimc size):
   ```
@@ -298,6 +302,7 @@ above in main folder
 ```go
   func (r *mutationResolver) CreateAccount(ctx context.Context, in AccountInput) (*Account, error) {
 ```
+
 
 
 
