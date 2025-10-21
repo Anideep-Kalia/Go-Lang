@@ -61,6 +61,21 @@ If you wnat to use 'a' only in code then we have 2 options:
   ```
 ---
 
+## Confusion 🤔
+
+- ```github.com/username/project``` in ```go mod init github.com/username/project``` is like a metadata or name of the module which will be used as identifier so to get correct package
+- & To get the global or publically availabe packages we neet to run ```go get github.com/username/project```
+- So the package will be working perfectly when imported locally, so it doesn't matter if the package exist over internet or not 
+- But I need to make this package globally available I need to first push this module to github repo in the same url as ```github.com/username/project```
+- If github repo has different name from ```go mod init github.com/username/project``` then we need to change the name inside to go.mod to github repo name
+- #### Remember:
+  - No matter you write ```go mod inti github.com/username/project``` or ```go mod init myproject```
+  - The packages will be only stored in: ```/Users/anideep/Projects/{project_name}/go.mod``` i.e. the location opened in terminal while running these commands
+      
+
+
+---
+
 ## 📄 File Handling in Go
 
 - You can have multiple files in the same package using the same `main` function. 
@@ -180,30 +195,74 @@ time.Now().Format("01-02-2006 15:04:05 Monday")
 ## 🚀 Goroutines and Concurrency
 
 - **Goroutines**: Lightweight threads managed by Go runtime for concurrent execution.
-- **Example of Starting a Goroutine**:
-  ```go
-  go functionName()
-  ```
 - **WaitGroups (`sync.WaitGroup`)**:
-  - Use `wg.Add()` to increase thread count.
-  - Use `wg.Done()` to decrease it.
+    - A WaitGroup is a synchronization helper that makes the main goroutine wait until all other goroutines signal that they’re done.
+    - Use `wg.Add()` to increase number of goroutines to wait for .
+    - Use `wg.Done()` to decrease number of goroutines to wait for .
+      
+- **Example of Goroutine & WaitGroups**:
+  ```go
+
+    func sayHello(wg *sync.WaitGroup) {
+        defer wg.Done() // Step 3: Decrease count by 1 when done
+        fmt.Println("Hello from Goroutine!")
+    }
+
+    func main() {
+        var wg sync.WaitGroup // Create WaitGroup
+        wg.Add(1)             // Step 1: Expect 1 goroutine to finish
+        go sayHello(&wg)      // Step 2: Launch goroutine
+        wg.Wait()             // Step 4: Wait until Done() is called
+        fmt.Println("All Goroutines finished!")
+    }
+  ```
+  
+  Execution pattern:
+  ```
+    wg.Add(1) → Counter = 1
+
+    Start goroutine
+
+    Goroutine runs → prints "Hello from Goroutine!"
+
+    Calls wg.Done() → Counter = 0
+
+    Main waits at wg.Wait() until counter = 0
+
+    Once done → Main prints "All Goroutines finished!"
+  ```
 
 ---
 
 ## 🔗 Channels for Communication
-
+- A channel is a pipe that allows two goroutines to communicate safely with each other — without using locks or shared memory.
+- Channels are blocking by default:
+    - When you send (ch <- x) but no one is receiving, the goroutine will wait.
+    - When you receive (<- ch) but no one has sent yet, it will also wait.
 - **Basic Syntax**:
   - Sending data: `ch <- value`
   - Receiving data: `value := <-ch`
-- Channels operate like stacks; data is removed after being retrieved.
+- Channels operate like queue; data is removed after being retrieved.
 - Closing a channel disallows further data pushes.
 - **Control Concurrency**
   - These are also used to control number of concurrency taking place i.e. number of goroutines working at a time
-  - EXAMPLE: 
-    - Number of Goroutine is controlled by fixing the size of channel
-    - Each goroutine pushes in stack before starting but if the channel is full
-    - Then that goroutine has to wait befoer channel is freed; else if the channel has space
-    - Then goroutine don't have to wait and can start immediately after pushing into channel
+  - EXAMPLE:
+    ```go
+    package main
+    import "fmt"
+
+    func main() {
+        ch := make(chan int, 2)  // buffer size = 2
+
+        ch <- 1
+        ch <- 2
+        fmt.Println("Two values sent to channel")
+
+        fmt.Println(<-ch) // 1 (first sent)
+        fmt.Println(<-ch) // 2 (second sent)
+    }
+
+    ```
 
 ---
 
@@ -223,12 +282,6 @@ time.Now().Format("01-02-2006 15:04:05 Monday")
 ```go
 var {name} int  // Declaration
 {name} := value // Short-hand assignment
-```
-
-### Maps
-
-```go
-{name} := make(map[int]int)
 ```
 
 ### Structs
@@ -303,7 +356,12 @@ above in main folder
   ```go
   func() { ... }()
   ```
+- To import modules from the github, we'll use:
+    ```go
+        go get github.com/username/{folder_name} from GitHub
+    ```
 - Ensure **synchronization** when using Goroutines by using WaitGroups, or else the `main` function may exit prematurely.
+
 - Miscellaneous
   ```go
   type DefaultParser struct {
@@ -325,6 +383,7 @@ above in main folder
 ```go
   func (r *mutationResolver) CreateAccount(ctx context.Context, in AccountInput) (*Account, error) {
 ```
+
 
 
 
