@@ -150,8 +150,31 @@ time.Now().Format("01-02-2006 15:04:05 Monday")
 ## 🔀 Control Flow
 
 - Go supports the `goto` command to jump between code blocks.
+      - goto in Go is a jump statement that transfers control of execution to a labeled statement within the same function.
 - The `defer` keyword stores the deferred code, executing it in reverse order.
+- Example:
+    ```go
+    func main() {
+        i := 1
+        if i < 2 {
+            goto label
+        }
 
+    label:
+        fmt.Println("Goto executed!")
+
+        defer fmt.Println("Deferred 1")
+        defer fmt.Println("Deferred 2")
+        fmt.Println("Main function")
+    }
+    ```   
+    Output:
+      ```
+              Goto executed!
+              Main function
+              Deferred 2
+              Deferred 1        
+      ```
 ---
 
 ## 🚀 Goroutines and Concurrency
@@ -302,6 +325,7 @@ above in main folder
 ```go
   func (r *mutationResolver) CreateAccount(ctx context.Context, in AccountInput) (*Account, error) {
 ```
+
 
 
 
