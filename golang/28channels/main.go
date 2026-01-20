@@ -7,14 +7,17 @@ import (
 
 func main() {
 
-	myCh := make(chan int, 2) // so we are defining that there are 2 channel or 2 space in stack of channel anything more than that value would be erased and filled again
+	// so we are defining that there are 2 channel or 2 space in stack of channel anything more than that value would be erased and filled again
+	myCh := make(chan int, 2) 
 	wg := &sync.WaitGroup{}
 
 	// fmt.Println(<-myCh)
 	// myCh <- 5
 	wg.Add(2)
 	// R ONLY
-	go func(ch <-chan int, wg *sync.WaitGroup) { // so the arrow plays crucial role in defing role of function for the channel as we can see here if there was no arrow then function can read and write both
+
+	// so the arrow plays crucial role in defing role of function for the channel as we can see here if there was no arrow then function can read and write both
+	go func(ch <-chan int, wg *sync.WaitGroup) { 
 
 		val, isChanelOpen := <-myCh
 
